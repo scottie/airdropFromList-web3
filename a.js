@@ -12,7 +12,7 @@ var spreadSheet = "https://docs.google.com/spreadsheets/d/1Fm2WXyQt0_9SdJOIFRPsn
 var rowName = "all addresses who performed both";
 const CTCaddress = "0xdbcadE285846131a5e7384685EADDBDFD9625557";
 const gas = 150000;
-var amount =  0.001;// in tokens not wei (not to power of 18)
+var amount =  0.0001;// in tokens not wei (not to power of 18)
 var web3 = new Web3(xDAI); 
 var account = web3.eth.accounts.wallet.add('0x' + wallet);
 web3.eth.accounts.wallet.add(account);
@@ -40,17 +40,17 @@ const checkWalletAmount = async (address, instance) => {
 }
 
 const writeFile = async (file, array) => {
-    fs.unlink(file, (err) => {
-        if (err) {
-            console.error(err)
-            return
-        }
-
-        var file = fs.createWriteStream(file);
-        file.on('error', function(err) { /* error handling */ });
-        array.forEach(function(v) { file.write(v.join(', ') + '\n'); });
+    console.log(array);
+    try{
+        var file = fs.createWriteStream(file, {flag: 'wx'});
+        file.on('error', function(err) { 
+            console.log("ERROR: ", err.message); 
+        });
+        array.forEach(function(v) { file.write(v + '\n'); });
         file.end();
-    })
+    }catch(x){
+        console.log("ERROR: ", x.message); 
+    }
 }
 
 const sendCoin = async (address, amount, instance) => {
@@ -120,6 +120,7 @@ const main = async (url) => {
                 }
             }catch(x){
                 console.log("[ERROR]:", x.message);
+                bad.push(address);
             }
         }
         
